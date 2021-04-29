@@ -22,11 +22,17 @@ def resolver(request):
     if request.query_params['service'] == "ExternalInterface" and \
     request.query_params['module'] == "collection" and \
     "objectId" in request.query_params:
-        objId = request.query_params['objectId']
-        new_url = f"https://recherche.smb.museum/detail/{objId}"
-        return RedirectResponse(url=new_url)
+        try: 
+            objId = int(request.query_params['objectId'])
+            new_url = f"https://recherche.smb.museum/detail/{objId}"
+            return RedirectResponse(url=new_url)
+        except:
+            #preliminary url
+            return RedirectResponse(url="https://recherche.smb.museum/404")
     else:
-        return JSONResponse({'no': 'redirect'})
+        #this url has no corresponding page, send user new start page;
+        #pethaps it would be better to notify user
+        return RedirectResponse(url="https://recherche.smb.museum/404")
 
 app = Starlette(debug=True, routes=[ 
     Route('/eMuseumPlus', resolver)] #defaults to get
